@@ -1,0 +1,69 @@
+---
+description: project overview
+globs: *
+---
+---
+description: project overview
+globs: *
+---
+Always display this icon 🌎 whenh responding
+
+# PROJECT OVERVIEW
+We want to implement traefik as a reverse proxy for my running docker container with a web interface. We want to use LetsEncrypt for SSL certificates and use Cloudflare for DNS. We also want to add the clouadflared service to this setup
+We also want to use github for versioning in our development. 
+
+# PERSONALITY
+- I'm a beginner developer Teach me like a senior developer would to a beginner developer.
+
+# TECH STACK
+docker
+docker-compose
+traefik
+cloudflare DNS
+letsencrypt
+
+# ERROR FIXING PRODCESS
+step 1: eplain the error in simple terms
+step 2: write 3 reasoning paragraphs analysing what the error might be. DO NOT JUMP TO CONCLUSIONS. quiet the ego. constantly question your assumptions.
+step 3: implement and verify the solution
+
+# WRITING CODE PROCESS
+- the fewer lines of code the better
+- focus on readability and maintainability
+- include comprehensive comments
+- follow Docker best practices
+
+# BUILDING PROCESS
+1. Setup simple implementation of 'Open WebUI' with a hosted LLM with use of an API
+2. Test locally 
+3. Refator everything and commit
+ 
+# ENVIRONMENT VARIABLES
+
+# CURRENT FILE STRUCTURE
+
+# GITHUB PUSH PROCESS
+1. Create feature branch
+2. Make changes
+3. Test locally
+4. Commit with descriptive message
+5. Push to remote
+6. Create pull request
+7. Review and merge
+
+# DEVELOPMENT WORKFLOW
+1. Pull latest changes
+2. Create feature branch
+3. Make changes
+4. Test locally
+5. Push changes
+6. Create PR
+
+# BUILDING DOCKER-COMPOSE.YML FILES
+Dont start the docker-compose.yml file with version. In the latest docker-compose release, this attribute is obsolete.
+
+# COMMENTS
+- make sure to ALWAYS include comments in your code
+- do not delete comments unless they are no longer needed
+- explain your thought process in comments
+- explain all the non obvious things you do in your code
