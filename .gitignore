@@ -1,6 +1,5 @@
 # Environment variables
-.env
-*.env
+/.env
 
 # System files
 .DS_Store
@@ -25,3 +24,6 @@ docker-compose.override.yml
 
 # Traefik specific
 acme.json
+
+# Traefik data
+/traefik/data/acme.json
