@@ -26,12 +26,13 @@ certificatesResolvers:
   cloudflare:
     acme:
       email: "jp.de.jong@icloud.com"
-      storage: /acme.json
+      storage: /traefik/data/acme.json
       dnsChallenge:
         provider: cloudflare
         resolvers:
           - "1.1.1.1:53"
           - "1.0.0.1:53"
+        delayBeforeCheck: 30
 
 # Provider configuration
 providers:
@@ -39,3 +40,12 @@ providers:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
     network: traefik_proxy
+    watch: true
+
+# Enable certificate dumping for debugging
+certificates:
+  certResolver: cloudflare
+  domains:
+    - main: "jp8080.com"
+      sans:
+        - "*.jp8080.com"
