@@ -1,68 +1,98 @@
-# Traefik with Cloudflare DNS and Let's Encrypt
+# Traefik Reverse Proxy Setup
 
-This repository contains a Docker Compose configuration for running Traefik as a reverse proxy with automatic SSL certificate generation using Let's Encrypt and Cloudflare DNS.
+A Docker-based Traefik setup with Cloudflare DNS integration, automatic SSL certificates, and secure configuration.
 
-## Prerequisites
+## Setup
 
-- Docker and Docker Compose installed
-- A Cloudflare account with your domain
-- API token from Cloudflare with DNS permissions
+1. Copy `example.env` to `.env` and fill in your values:
+```bash
+cp example.env .env
+```
 
-## Setup Instructions
+2. Update the following variables in `.env`:
+- `CF_API_EMAIL`: Your Cloudflare email
+- `CF_API_KEY`: Your Cloudflare API key
+- `DOMAIN`: Your domain name
+- `TRAEFIK_BASIC_AUTH`: Generate with `echo $(htpasswd -nb user password) | sed -e s/\\$/\\$\\$/g`
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/jp8080nl/cloudflared-and-traefik.git
-   cd cloudflared-and-traefik
-   ```
+3. Create the Docker network:
+```bash
+docker network create traefik_proxy
+```
 
-2. Create the external network:
-   ```bash
-   docker network create traefik_proxy
-   ```
+4. Start the services:
+```bash
+docker-compose up -d
+```
 
-3. Copy the example environment file:
-   ```bash
-   cp .env.example .env
-   ```
+## Adding New Services
 
-4. Edit the `.env` file with your credentials:
-   - Add your Cloudflare email
-   - Add your Cloudflare API key
-   - Generate and add basic auth credentials for the dashboard:
-     ```bash
-     echo $(htpasswd -nb user password) | sed -e s/\\$/\\$\\$/g
-     ```
-
-5. Create the ACME JSON file for Let's Encrypt:
-   ```bash
-   touch data/acme.json
-   chmod 600 data/acme.json
-   ```
-
-6. Start Traefik:
-   ```bash
-   docker-compose up -d
-   ```
-
-## Configuration
-
-- Traefik dashboard is available at: `traefik.your-domain.com`
-- All services should be on the `traefik_proxy` network
-- Add labels to your containers to enable Traefik routing
-
-## Example Service Labels
+To add a new service to Traefik, use these Docker labels in your service configuration:
 
 ```yaml
 labels:
+  # Enable Traefik for this service
   - "traefik.enable=true"
-  - "traefik.http.routers.myapp.rule=Host(`app.your-domain.com`)"
-  - "traefik.http.routers.myapp.entrypoints=websecure"
-  - "traefik.http.routers.myapp.tls.certresolver=cloudflare"
+  
+  # Router configuration
+  - "traefik.http.routers.your-service.rule=Host(`your-service.${DOMAIN}`)"
+  - "traefik.http.routers.your-service.entrypoints=websecure"
+  - "traefik.http.routers.your-service.tls=true"
+  - "traefik.http.routers.your-service.tls.certresolver=cloudflare"
+  
+  # Service configuration (if port is not 80)
+  - "traefik.http.services.your-service.loadbalancer.server.port=YOUR_PORT"
+  
+  # Add common middlewares for security and performance
+  - "traefik.http.routers.your-service.middlewares=secure-headers,compression,rate-limit"
 ```
 
-## Security Notes
+### Available Middlewares
 
-- Never commit the `.env` file with real credentials
-- Keep your API keys and passwords secure
-- The `acme.json` file contains your SSL certificates 
+The following middlewares are pre-configured and ready to use:
+
+1. `secure-headers`: Adds security headers
+   - SSL redirect
+   - HSTS
+   - XSS protection
+   - Content type nosniff
+   - Frame options
+   
+2. `compression`: Enables gzip compression for responses
+
+3. `rate-limit`: Basic rate limiting
+   - 100 requests per second average
+   - 50 request burst
+
+### Example Service
+
+Here's an example of a service configuration:
+
+```yaml
+services:
+  myapp:
+    image: nginx
+    container_name: myapp
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.myapp.rule=Host(`myapp.${DOMAIN}`)"
+      - "traefik.http.routers.myapp.entrypoints=websecure"
+      - "traefik.http.routers.myapp.tls=true"
+      - "traefik.http.routers.myapp.tls.certresolver=cloudflare"
+      - "traefik.http.routers.myapp.middlewares=secure-headers,compression,rate-limit"
+```
+
+## Accessing Services
+
+- Traefik Dashboard: https://traefik.${DOMAIN}
+- Example Whoami Service: https://whoami.${DOMAIN}
+
+## Security Features
+
+- Automatic HTTPS redirection
+- Let's Encrypt SSL certificates via Cloudflare DNS challenge
+- Security headers enabled by default
+- Rate limiting to prevent abuse
+- Basic authentication for Traefik dashboard 
