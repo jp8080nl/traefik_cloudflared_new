@@ -1,0 +1,20 @@
+# Tunnel configuration
+tunnel-token: ${TUNNEL_TOKEN}
+
+# Ingress rules for the tunnel
+ingress:
+  # Default catch-all rule
+  - service: http://traefik:80
+    hostname: "*.${DOMAIN}"
+  
+  # Catch-all rule must be last
+  - service: http_status:404
+
+# Tunnel settings
+originRequest:
+  noTLSVerify: true  # Since Traefik handles SSL termination
+  connectTimeout: 30s
+  noHappyEyeballs: true
+
+# Metrics for monitoring
+metrics: 0.0.0.0:2000 
